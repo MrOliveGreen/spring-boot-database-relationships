@@ -21,10 +21,19 @@ public class PlayerProfileService {
 
     public PlayerProfile addPlayerProfile(PlayerProfile profile) {
         profile.setId(0);
+        //check if profile contains nested player
+        if(profile.getPlayer()!=null) {
+            profile.getPlayer().setPlayerProfile(profile);
+        }
         return repo.save(profile);
     }
 
     public void deletePlayerProfile(int id) {
-        repo.deleteById(id);
+        PlayerProfile tempPlayerProfile = repo.findById(id).get();
+        tempPlayerProfile.getPlayer().setPlayerProfile(null);
+        tempPlayerProfile.setPlayer(null);
+        repo.save(tempPlayerProfile);
+        repo.delete(tempPlayerProfile);
     }
 }
+
